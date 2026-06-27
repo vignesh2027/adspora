@@ -6,6 +6,7 @@ from fastapi.responses import StreamingResponse
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
+from bson.errors import InvalidId
 from pydantic import BaseModel, Field, ConfigDict, BeforeValidator
 from typing import List, Optional, Annotated
 from datetime import datetime, timezone, timedelta
@@ -395,7 +396,11 @@ async def list_creatives(request: Request, platform: Optional[str] = None, statu
 @api_router.get("/creatives/{creative_id}")
 async def get_creative(creative_id: str, request: Request):
     await get_current_user(request)
-    c = await db.creatives.find_one({"_id": ObjectId(creative_id)})
+    try:
+        oid = ObjectId(creative_id)
+    except (InvalidId, Exception):
+        raise HTTPException(status_code=404, detail="Creative not found")
+    c = await db.creatives.find_one({"_id": oid})
     if not c:
         raise HTTPException(status_code=404, detail="Creative not found")
     c["_id"] = str(c["_id"])

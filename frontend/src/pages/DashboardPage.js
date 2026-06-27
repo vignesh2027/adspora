@@ -5,9 +5,9 @@ import StatsCard from "@/components/StatsCard";
 import StatusPill from "@/components/StatusPill";
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, PieChart, Pie, Cell, LineChart, Line, Legend
+  BarChart, Bar, PieChart, Pie, Cell, LineChart, Line
 } from "recharts";
-import { TrendingUp, AlertTriangle, Layers, DollarSign, Activity, Skull } from "lucide-react";
+import { TrendingUp, AlertTriangle } from "lucide-react";
 
 const COLORS = { healthy: "#10B981", watch: "#F59E0B", fatiguing: "#F97316", dead: "#EF4444" };
 
@@ -94,8 +94,8 @@ export default function DashboardPage() {
       <div className="en-card mb-6" data-testid={DASHBOARD.roasTrendChart}>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h3 className="text-lg font-medium text-white font-['Outfit']">ROAS & Revenue Trend</h3>
-            <p className="text-xs text-[#94A3B8]">Daily performance over time</p>
+            <h3 className="text-lg font-medium text-white font-['Outfit']">ROAS Trend</h3>
+            <p className="text-xs text-[#94A3B8]">Daily ROAS performance over time</p>
           </div>
           <TrendingUp size={18} className="text-[#10B981]" />
         </div>
@@ -106,19 +106,12 @@ export default function DashboardPage() {
                 <stop offset="5%" stopColor="#10B981" stopOpacity={0.3} />
                 <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
               </linearGradient>
-              <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.2} />
-                <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
-              </linearGradient>
             </defs>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(16,185,129,0.06)" />
             <XAxis dataKey="date" tick={{ fill: "#475569", fontSize: 11 }} tickFormatter={(v) => v.slice(5)} axisLine={false} tickLine={false} />
-            <YAxis yAxisId="roas" tick={{ fill: "#475569", fontSize: 11 }} axisLine={false} tickLine={false} />
-            <YAxis yAxisId="rev" orientation="right" tick={{ fill: "#475569", fontSize: 11 }} axisLine={false} tickLine={false} />
+            <YAxis tick={{ fill: "#475569", fontSize: 11 }} axisLine={false} tickLine={false} domain={[0, "auto"]} />
             <Tooltip content={<CustomTooltip />} />
-            <Legend wrapperStyle={{ color: "#94A3B8", fontSize: 12 }} />
-            <Area yAxisId="roas" type="monotone" dataKey="roas" name="ROAS" stroke="#10B981" fill="url(#roasGrad)" strokeWidth={2} dot={false} />
-            <Area yAxisId="rev" type="monotone" dataKey="revenue" name="Revenue" stroke="#F59E0B" fill="url(#revGrad)" strokeWidth={1.5} dot={false} />
+            <Area type="monotone" dataKey="roas" name="ROAS" stroke="#10B981" fill="url(#roasGrad)" strokeWidth={2} dot={false} />
           </AreaChart>
         </ResponsiveContainer>
       </div>
@@ -192,17 +185,21 @@ export default function DashboardPage() {
         </div>
 
         <div className="en-card" data-testid={DASHBOARD.spendRevenueChart}>
-          <h3 className="text-lg font-medium text-white font-['Outfit'] mb-4">Spend vs Revenue</h3>
+          <h3 className="text-lg font-medium text-white font-['Outfit'] mb-4">Daily Revenue</h3>
           <ResponsiveContainer width="100%" height={220}>
-            <BarChart data={trends.slice(-14)}>
+            <AreaChart data={trends.slice(-14)}>
+              <defs>
+                <linearGradient id="revGrad2" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#F59E0B" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#F59E0B" stopOpacity={0} />
+                </linearGradient>
+              </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(16,185,129,0.06)" />
               <XAxis dataKey="date" tick={{ fill: "#475569", fontSize: 11 }} tickFormatter={(v) => v.slice(8)} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "#475569", fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip content={<CustomTooltip />} />
-              <Legend wrapperStyle={{ color: "#94A3B8", fontSize: 12 }} />
-              <Bar dataKey="spend" name="Spend" fill="#EF4444" radius={[2, 2, 0, 0]} opacity={0.7} />
-              <Bar dataKey="revenue" name="Revenue" fill="#10B981" radius={[2, 2, 0, 0]} />
-            </BarChart>
+              <Area type="monotone" dataKey="revenue" name="Revenue ($)" stroke="#F59E0B" fill="url(#revGrad2)" strokeWidth={2} dot={false} />
+            </AreaChart>
           </ResponsiveContainer>
         </div>
       </div>
