@@ -1,0 +1,104 @@
+{
+  "theme": "dark",
+  "archetype": "5",
+  "archetype_name": "Luxury (Emerald Noir Data-First)",
+  "emotional_tone": "Calm control, premium intelligence, proactive power",
+  "typography": {
+    "heading_font": "Outfit",
+    "body_font": "Satoshi",
+    "mono_font": "JetBrains Mono",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tight leading-none font-light",
+      "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight font-medium",
+      "h3": "text-xl sm:text-2xl tracking-tight",
+      "h4": "text-lg sm:text-xl font-medium",
+      "body": "text-base leading-relaxed",
+      "small": "text-sm text-emerald-100/60",
+      "mono_data": "font-mono text-sm tracking-tight"
+    },
+    "notes": "Outfit for strong, premium tech headlines. JetBrains Mono for exact performance data (ROAS, CTR, Spend). Satoshi for highly readable body text."
+  },
+  "colors": {
+    "background": {
+      "main": "#050A08",
+      "surface": "#0D1411",
+      "surface_hover": "#131C18",
+      "glass": "bg-[#050A08]/80 backdrop-blur-2xl"
+    },
+    "primary": {
+      "default": "#10B981",
+      "hover": "#34D399",
+      "active": "#059669",
+      "glow": "drop-shadow-[0_0_12px_rgba(16,185,129,0.3)]"
+    },
+    "text": {
+      "primary": "#FFFFFF",
+      "secondary": "#94A3B8",
+      "muted": "#475569",
+      "accent": "#10B981"
+    },
+    "status": {
+      "healthy": "#10B981",
+      "watch": "#F59E0B",
+      "fatiguing": "#F97316",
+      "dead": "#EF4444"
+    },
+    "borders": {
+      "default": "border-[#10B981]/10",
+      "focus": "border-[#10B981]/40"
+    }
+  },
+  "layout_and_spacing": {
+    "spacing_scale": "Generous Spacing Philosophy: use p-6 or p-8 for cards. Inner elements use gap-4 or gap-6.",
+    "grid_strategy": "MODE B: THE CONTROL ROOM GRID. grid-cols-1 md:grid-cols-3 lg:grid-cols-4 or 12-col grids. Tight gap-4 or gap-6 for data relation. Height full on children for exact alignment.",
+    "alignment": "Left-align dense data, labels, inputs. Center-align empty states or hero headers.",
+    "surface_strategy": "1px delicate inner stroke on glass surfaces (border-[#10B981]/10). Solid flat backgrounds for dense dashboard cards to prevent visual refraction."
+  },
+  "components": {
+    "buttons": "Flat, sharp or max rounded-md. Primary: bg-emerald-500 text-white hover:bg-emerald-400. Secondary: bg-transparent border border-emerald-500/20 text-emerald-500 hover:bg-emerald-500/10.",
+    "cards": "Cardless or flat dark surfaces. bg-[#0D1411] border border-[#10B981]/10 rounded-lg. No soft drop shadows, rely on 1px borders.",
+    "data_tables": "Dense. text-sm. Hover states slightly lighten row bg to #131C18.",
+    "charts": "Recharts with custom tooltips. Use Emerald for main metric, Amber for risk, Red for drop-offs. Gridlines must be extremely faint (stroke-opacity 0.1).",
+    "fatigue_gauge": "0-100 gauge. Use an arc or linear progress bar. 0-40 (Red), 40-70 (Amber), 70-100 (Emerald).",
+    "status_pills": "Small, rounded-full. px-2 py-0.5 text-xs font-mono. text-{status} bg-{status}/10 border border-{status}/20."
+  },
+  "motion_and_interactions": {
+    "hover_states": "Cards translate-y-[-2px] with border color brightening to border-[#10B981]/30. Always set explicit hover text color.",
+    "transitions": "transition-all duration-200 ease-out",
+    "loading": "Use skeleton screens with a subtle emerald shimmer (mask-image gradient animation) rather than generic spinners."
+  },
+  "icons_and_assets": {
+    "library": "lucide-react",
+    "style": "Clean, thin stroke (1.5). Do not use solid icons unless indicating 'active' state."
+  },
+  "media": {
+    "logo_url": "https://customer-assets.emergentagent.com/job_217906d7-692a-4730-b893-fe6b7715f218/artifacts/tipqcf7w_image.png",
+    "backgrounds": [
+      {
+        "url": "https://images.pexels.com/photos/5200063/pexels-photo-5200063.jpeg",
+        "description": "Abstract green wave patterns on a dark background - use for auth page background or AI Studio header overlay",
+        "category": "auth_background"
+      },
+      {
+        "url": "https://images.pexels.com/photos/14822817/pexels-photo-14822817.jpeg",
+        "description": "Vibrant green ink swirling underwater creates a mesmerizing abstract texture - use for hero section or premium dark mode textural accents",
+        "category": "texture_background"
+      }
+    ]
+  },
+  "testing": {
+    "requirements": "All interactive elements MUST include data-testid attribute in kebab-case, e.g., data-testid='upload-csv-button' or data-testid='fatigue-gauge-meta'."
+  },
+  "instructions_to_main_agent": [
+    "Ensure all components use .js extensions.",
+    "Implement 'Emerald Noir' theme exactly: #050A08 background, #0D1411 surfaces, #10B981 emerald accents. Never use pure black or default Tailwind slate without tinting.",
+    "Dashboard must contain a 'Creatives Command Center' with sortable table (data-testid='creatives-table').",
+    "Implement 'AI Studio' where users can select a fatiguing creative and generate replacement copy (Meta, TikTok, etc.).",
+    "Use Recharts or Shadcn charts for ROAS trends and CTR trends.",
+    "Build a custom 'Fatigue Score' gauge component (0-100 scale).",
+    "Include a CSV/Excel upload adapter component that parses file data into the dashboard.",
+    "All navigation and layout structure should use 'MODE B: Control Room Grid' for dense, usable data presentation.",
+    "Include predictive fatigue forecasting numbers (e.g., 'Est. 3 days left') in the UI.",
+    "Add 'data-testid' to all buttons, inputs, links, and major layout sections."
+  ]
+}
