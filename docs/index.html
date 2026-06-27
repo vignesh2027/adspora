@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Adspora — AI Creative-Fatigue Intelligence</title>
+<meta name="description" content="Adspora detects fatiguing ad creatives across Meta, Google, Taboola and TikTok, explains why, and writes your next winners — automatically." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M12 2 L22 12 L12 22 L2 12 Z' fill='%2310B981'/></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0A0F0D; --panel:#111815; --panel-2:#0E1411; --border:#1F2A24;
+  --emerald:#10B981; --emerald-2:#34D399; --gold:#D4AF37;
+  --amber:#F59E0B; --red:#EF4444; --white:#F8FAFC; --slate:#9CA3AF; --slate-dim:#6B7280;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--white);
+  -webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden;
+}
+body::before{
+  content:"";position:fixed;top:-20%;right:-10%;width:60vw;height:60vw;pointer-events:none;z-index:0;
+  background:radial-gradient(circle, rgba(16,185,129,0.16) 0%, rgba(16,185,129,0.04) 40%, transparent 70%);
+}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+.hidden{display:none !important}
+
+/* ---------- Logo ---------- */
+.logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:19px;letter-spacing:-0.02em}
+.logo svg{flex-shrink:0}
+.logo .word{background:linear-gradient(90deg,#fff,#cdeede);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+/* ---------- Buttons ---------- */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 20px;border-radius:12px;font-weight:600;font-size:14px;transition:all .18s ease;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--emerald),var(--emerald-2));color:#04130d;box-shadow:0 6px 24px -8px rgba(16,185,129,.6)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 30px -8px rgba(16,185,129,.7)}
+.btn-ghost{background:rgba(255,255,255,.04);border:1px solid var(--border);color:var(--white)}
+.btn-ghost:hover{background:rgba(255,255,255,.08);border-color:#2c3a32}
+.btn-sm{padding:8px 14px;font-size:13px;border-radius:10px}
+
+/* ---------- Landing ---------- */
+#view-landing{position:relative;z-index:1}
+.nav{position:sticky;top:0;z-index:50;display:flex;align-items:center;justify-content:space-between;
+  padding:18px 6vw;backdrop-filter:blur(12px);background:rgba(10,15,13,.55);border-bottom:1px solid rgba(31,42,36,.6)}
+.nav-links{display:flex;gap:30px;align-items:center;font-size:14px;color:var(--slate)}
+.nav-links a:hover{color:var(--white)}
+.hero{text-align:center;padding:90px 6vw 60px;position:relative;z-index:1}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:7px 16px;border-radius:999px;background:rgba(16,185,129,.08);
+  border:1px solid rgba(16,185,129,.25);color:var(--emerald-2);font-size:13px;font-weight:600;margin-bottom:28px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 10px var(--emerald)}
+.hero h1{font-size:clamp(38px,6vw,68px);font-weight:900;letter-spacing:-0.03em;line-height:1.02;max-width:900px;margin:0 auto 22px}
+.hero h1 .accent{background:linear-gradient(135deg,var(--emerald),var(--emerald-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.hero p.sub{font-size:clamp(16px,2vw,20px);color:var(--slate);max-width:640px;margin:0 auto 38px}
+.hero-cta{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+.stats-strip{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-top:64px;padding-top:38px;border-top:1px solid var(--border)}
+.stat b{display:block;font-size:30px;font-weight:800;background:linear-gradient(135deg,var(--emerald),var(--emerald-2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.stat span{font-size:13px;color:var(--slate-dim)}
+
+.section{padding:80px 6vw;position:relative;z-index:1}
+.section h2{font-size:clamp(28px,4vw,42px);font-weight:800;letter-spacing:-0.02em;text-align:center;margin-bottom:14px}
+.section .lead{text-align:center;color:var(--slate);max-width:560px;margin:0 auto 56px;font-size:16px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:1000px;margin:0 auto}
+.step{background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:32px 28px;position:relative;transition:transform .2s,border-color .2s}
+.step:hover{transform:translateY(-4px);border-color:rgba(16,185,129,.35)}
+.step .num{font-size:13px;font-weight:700;color:var(--emerald);letter-spacing:.1em;margin-bottom:14px}
+.step .ico{width:48px;height:48px;border-radius:13px;display:grid;place-items:center;background:rgba(16,185,129,.1);margin-bottom:18px;font-size:24px}
+.step h3{font-size:20px;font-weight:700;margin-bottom:9px}
+.step p{color:var(--slate);font-size:14.5px}
+.features{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1100px;margin:0 auto}
+.feature{background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:26px;transition:border-color .2s}
+.feature:hover{border-color:rgba(16,185,129,.3)}
+.feature .ico{font-size:22px;margin-bottom:14px}
+.feature h4{font-size:16.5px;font-weight:700;margin-bottom:7px}
+.feature p{color:var(--slate);font-size:14px}
+.quote{max-width:760px;margin:0 auto;text-align:center;background:linear-gradient(135deg,rgba(16,185,129,.07),rgba(52,211,153,.03));
+  border:1px solid rgba(16,185,129,.2);border-radius:24px;padding:46px 40px}
+.quote p{font-size:clamp(19px,2.4vw,26px);font-weight:600;line-height:1.4;letter-spacing:-0.01em}
+.quote .by{margin-top:20px;color:var(--slate);font-size:14px}
+footer{padding:46px 6vw;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;color:var(--slate-dim);font-size:13px;position:relative;z-index:1}
+
+/* ---------- App shell ---------- */
+#view-app{display:none;position:relative;z-index:1;min-height:100vh}
+.shell{display:flex;min-height:100vh}
+.sidebar{width:248px;flex-shrink:0;background:var(--panel-2);border-right:1px solid var(--border);
+  padding:22px 16px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.sidebar .logo{padding:6px 8px 22px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:11px;color:var(--slate);
+  font-size:14.5px;font-weight:500;margin-bottom:4px;transition:all .15s;cursor:pointer}
+.nav-item:hover{background:rgba(255,255,255,.04);color:var(--white)}
+.nav-item.active{background:rgba(16,185,129,.12);color:var(--emerald-2);font-weight:600}
+.nav-item .ico{width:20px;text-align:center;font-size:16px}
+.sidebar-foot{margin-top:auto;padding:14px;font-size:12px;color:var(--slate-dim);border-top:1px solid var(--border)}
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 30px;border-bottom:1px solid var(--border);background:rgba(10,15,13,.5);backdrop-filter:blur(8px);position:sticky;top:0;z-index:20}
+.topbar h2{font-size:18px;font-weight:700}
+.topbar .right{display:flex;align-items:center;gap:14px}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--emerald),var(--emerald-2));display:grid;place-items:center;font-weight:700;color:#04130d;font-size:14px}
+.content{padding:30px;flex:1}
+.page{display:none}
+.page.active{display:block;animation:fade .3s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- Cards / KPI ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:24px}
+.kpi{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:22px}
+.kpi .label{font-size:13px;color:var(--slate);margin-bottom:10px;display:flex;align-items:center;gap:7px}
+.kpi .val{font-size:28px;font-weight:800;letter-spacing:-0.02em}
+.kpi .val.gold{color:var(--gold)}
+.kpi .sub{font-size:12.5px;color:var(--slate-dim);margin-top:6px}
+.grid-2{display:grid;grid-template-columns:1.4fr 1fr;gap:18px;margin-bottom:24px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:22px}
+.card h3{font-size:15.5px;font-weight:700;margin-bottom:4px}
+.card .csub{font-size:13px;color:var(--slate);margin-bottom:18px}
+.chart-wrap{position:relative;height:260px}
+.chart-wrap.sm{height:230px}
+
+/* ---------- Alert panel ---------- */
+.alert-row{display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid var(--border)}
+.alert-row:last-child{border-bottom:none}
+.alert-rank{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;font-weight:700;font-size:13px;flex-shrink:0;background:rgba(239,68,68,.14);color:#fca5a5}
+.alert-info{flex:1;min-width:0}
+.alert-info b{font-size:14px;font-weight:600;display:block}
+.alert-info span{font-size:12.5px;color:var(--slate)}
+.alert-risk{font-size:13px;font-weight:700;color:var(--gold);white-space:nowrap}
+
+/* ---------- Table ---------- */
+.filters{display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.chip{padding:7px 15px;border-radius:10px;background:var(--panel);border:1px solid var(--border);font-size:13px;color:var(--slate);cursor:pointer;transition:all .15s}
+.chip:hover{color:var(--white)}
+.chip.active{background:rgba(16,185,129,.12);border-color:rgba(16,185,129,.4);color:var(--emerald-2);font-weight:600}
+.table-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+thead th{text-align:left;padding:14px 18px;color:var(--slate-dim);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--border);cursor:pointer;user-select:none}
+thead th:hover{color:var(--slate)}
+tbody td{padding:14px 18px;border-bottom:1px solid rgba(31,42,36,.5)}
+tbody tr{transition:background .12s;cursor:pointer}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+tbody tr:last-child td{border-bottom:none}
+.pf-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;background:rgba(255,255,255,.05);border:1px solid var(--border)}
+.status-pill{display:inline-flex;align-items:center;gap:6px;padding:4px 11px;border-radius:999px;font-size:12px;font-weight:600}
+.status-healthy{background:rgba(16,185,129,.14);color:var(--emerald-2)}
+.status-watch{background:rgba(245,158,11,.14);color:#fbbf24}
+.status-fatiguing{background:rgba(239,68,68,.12);color:#f87171}
+.status-dead{background:rgba(239,68,68,.2);color:#fca5a5}
+.gauge{display:inline-flex;align-items:center;gap:9px}
+.gauge-bar{width:54px;height:6px;border-radius:3px;background:rgba(255,255,255,.08);overflow:hidden}
+.gauge-fill{height:100%;border-radius:3px}
+.gauge-num{font-weight:700;font-size:13px;min-width:30px}
+
+/* ---------- AI Studio ---------- */
+.studio{display:grid;grid-template-columns:300px 1fr;gap:20px}
+.studio-list{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:14px;max-height:74vh;overflow-y:auto}
+.studio-item{padding:12px 14px;border-radius:12px;cursor:pointer;margin-bottom:6px;border:1px solid transparent;transition:all .15s}
+.studio-item:hover{background:rgba(255,255,255,.03)}
+.studio-item.active{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.35)}
+.studio-item b{font-size:13.5px;font-weight:600;display:block;margin-bottom:4px}
+.studio-item .meta{font-size:12px;color:var(--slate);display:flex;justify-content:space-between}
+.studio-main{min-width:0}
+.diag-card{background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:26px;margin-bottom:20px}
+.diag-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.diag-head h3{font-size:19px;font-weight:700}
+.urgency{padding:5px 13px;border-radius:999px;font-size:12.5px;font-weight:700}
+.urg-Critical{background:rgba(239,68,68,.2);color:#fca5a5}
+.urg-High{background:rgba(245,158,11,.18);color:#fbbf24}
+.urg-Medium{background:rgba(16,185,129,.15);color:var(--emerald-2)}
+.urg-Low{background:rgba(148,163,184,.15);color:var(--slate)}
+.diag-block{margin-bottom:18px}
+.diag-block .t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--emerald);margin-bottom:7px;display:flex;align-items:center;gap:7px}
+.diag-block p{color:#d6dee0;font-size:14.5px}
+.diag-block ul{list-style:none;padding:0}
+.diag-block li{padding:7px 0 7px 24px;position:relative;color:#d6dee0;font-size:14.5px;border-bottom:1px solid rgba(31,42,36,.5)}
+.diag-block li:last-child{border-bottom:none}
+.diag-block li::before{content:"→";position:absolute;left:0;color:var(--emerald)}
+.metric-inline{display:flex;gap:22px;flex-wrap:wrap;margin:8px 0 20px;padding:16px;background:var(--panel-2);border-radius:12px;border:1px solid var(--border)}
+.metric-inline div span{display:block;font-size:11.5px;color:var(--slate-dim);text-transform:uppercase;letter-spacing:.04em}
+.metric-inline div b{font-size:18px;font-weight:700}
+.var-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.var{background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:20px;display:flex;flex-direction:column}
+.var .vtag{font-size:11px;font-weight:700;color:var(--emerald);text-transform:uppercase;letter-spacing:.05em;margin-bottom:10px}
+.var .vhead{font-size:15.5px;font-weight:700;margin-bottom:9px;line-height:1.3}
+.var .vbody{font-size:13.5px;color:var(--slate);flex:1;margin-bottom:14px}
+.var .vcta{display:inline-block;font-size:12.5px;font-weight:600;color:var(--emerald-2);margin-bottom:14px}
+.var .vangle{font-size:11.5px;color:var(--slate-dim);font-style:italic;margin-bottom:14px}
+.copy-btn{margin-top:auto;width:100%;justify-content:center;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:var(--emerald-2);padding:9px;border-radius:10px;font-size:13px;font-weight:600;transition:all .15s}
+.copy-btn:hover{background:rgba(16,185,129,.18)}
+.empty-state{text-align:center;padding:80px 20px;color:var(--slate)}
+.empty-state .ico{font-size:46px;margin-bottom:16px;opacity:.6}
+
+/* ---------- misc ---------- */
+.skeleton{background:linear-gradient(90deg,var(--panel) 25%,#16201b 50%,var(--panel) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:12px}
+@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--panel);border:1px solid rgba(16,185,129,.4);
+  padding:12px 22px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;transition:all .25s;z-index:200;box-shadow:0 10px 40px -10px rgba(0,0,0,.6)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.section-actions{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:12px}
+.section-actions h1{font-size:24px;font-weight:800;letter-spacing:-0.02em}
+.section-actions .desc{font-size:13.5px;color:var(--slate);margin-top:4px}
+
+@media(max-width:1000px){
+  .kpis{grid-template-columns:repeat(2,1fr)}.grid-2{grid-template-columns:1fr}.steps,.features{grid-template-columns:1fr}
+  .studio{grid-template-columns:1fr}.var-grid{grid-template-columns:1fr}.nav-links{display:none}
+  .sidebar{position:fixed;left:-260px;transition:left .25s;z-index:100}.sidebar.open{left:0}
+  .metric-inline{gap:14px}
+}
+</style>
+</head>
+<body>
+
+<!-- ============ LANDING ============ -->
+<div id="view-landing">
+  <nav class="nav">
+    <div class="logo">
+      <svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 2 L22 12 L12 22 L2 12 Z" fill="url(#lg)"/><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10B981"/><stop offset="1" stop-color="#34D399"/></linearGradient></defs></svg>
+      <span class="word">Adspora</span>
+    </div>
+    <div class="nav-links">
+      <a href="#how">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#" onclick="enterApp();return false">Live Demo</a>
+    </div>
+    <button class="btn btn-primary btn-sm" onclick="enterApp()">Open Dashboard →</button>
+  </nav>
+
+  <section class="hero">
+    <span class="badge"><span class="dot"></span> AI Creative-Fatigue Intelligence</span>
+    <h1>Stop losing budget to <span class="accent">dead creatives</span>.</h1>
+    <p class="sub">Adspora detects fatiguing ads across Meta, Google, Taboola and TikTok, explains <em>why</em> they're dying, and writes your next winners — automatically.</p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" onclick="enterApp()">Get Started Free</button>
+      <button class="btn btn-ghost" onclick="enterApp()">▶ Live Demo</button>
+    </div>
+    <div class="stats-strip">
+      <div class="stat"><b>24</b><span>creatives tracked</span></div>
+      <div class="stat"><b>4</b><span>ad platforms</span></div>
+      <div class="stat"><b>7–14d</b><span>avg creative lifespan</span></div>
+      <div class="stat"><b>AI</b><span>powered diagnosis</span></div>
+    </div>
+  </section>
+
+  <section class="section" id="how">
+    <h2>One loop. Fully automated.</h2>
+    <p class="lead">The work a media buyer does manually every day — Adspora does it in seconds.</p>
+    <div class="steps">
+      <div class="step"><div class="num">01 — DETECT</div><div class="ico">🛰️</div><h3>Detect fatigue</h3><p>Normalizes performance across every platform and scores each creative 0–100 as its ROAS and CTR decay — before it bleeds budget.</p></div>
+      <div class="step"><div class="num">02 — DIAGNOSE</div><div class="ico">🧠</div><h3>Diagnose why</h3><p>An AI analyst explains the root cause — audience saturation, hook wear-out, frequency — in the language a media buyer actually uses.</p></div>
+      <div class="step"><div class="num">03 — GENERATE</div><div class="ico">⚡</div><h3>Generate winners</h3><p>Writes ready-to-launch replacement ads, tuned to each platform's voice, so you ship the next test the moment a creative dies.</p></div>
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <h2>Built for performance media buyers</h2>
+    <p class="lead">Everything a lean, high-spend affiliate team needs to keep creatives alive.</p>
+    <div class="features">
+      <div class="feature"><div class="ico">📊</div><h4>Cross-platform dashboard</h4><p>Meta, Google, Taboola and TikTok unified into one schema — no more reconciling spreadsheets with different metric names.</p></div>
+      <div class="feature"><div class="ico">🎯</div><h4>Fatigue scoring engine</h4><p>Deterministic, explainable 0–100 score from ROAS decay, CTR trend, breakeven distance and creative age.</p></div>
+      <div class="feature"><div class="ico">🚨</div><h4>Spend-at-risk alerts</h4><p>Surfaces the exact creatives draining budget right now and the dollars on the line if you don't act.</p></div>
+      <div class="feature"><div class="ico">🧠</div><h4>AI diagnosis</h4><p>Root-cause analysis with recommended next angles — like having a senior analyst on every creative.</p></div>
+      <div class="feature"><div class="ico">✍️</div><h4>Ad variation generator</h4><p>Three launch-ready replacements per creative, written in each platform's native voice.</p></div>
+      <div class="feature"><div class="ico">🔌</div><h4>CSV adapter layer</h4><p>Drop in an export from any ad platform — it normalizes and re-scores instantly. Built to plug into real ad APIs.</p></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="quote">
+      <p>"In 2026 the performance bottleneck isn't targeting — it's creative. Whoever spots fatigue first and ships the next winner fastest, wins."</p>
+      <div class="by">— The thesis behind Adspora</div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="logo"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 2 L22 12 L12 22 L2 12 Z" fill="#10B981"/></svg><span>Adspora</span></div>
+    <div>Built by Vigneshwar · AI Creative-Fatigue Intelligence</div>
+  </footer>
+</div>
+
+<!-- ============ APP ============ -->
+<div id="view-app">
+  <div class="shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="logo">
+        <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2 L22 12 L12 22 L2 12 Z" fill="url(#sg)"/><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10B981"/><stop offset="1" stop-color="#34D399"/></linearGradient></defs></svg>
+        <span class="word">Adspora</span>
+      </div>
+      <div class="nav-item active" data-page="overview"><span class="ico">▦</span> Overview</div>
+      <div class="nav-item" data-page="creatives"><span class="ico">🎬</span> Creatives</div>
+      <div class="nav-item" data-page="studio"><span class="ico">⚡</span> AI Studio</div>
+      <div class="nav-item" data-page="reports"><span class="ico">📈</span> Reports</div>
+      <div class="nav-item" data-page="settings"><span class="ico">⚙</span> Settings</div>
+      <div class="sidebar-foot">Demo workspace · seeded with live-shaped data across 4 platforms.</div>
+    </aside>
+
+    <div class="main">
+      <div class="topbar">
+        <h2 id="topbar-title">Overview</h2>
+        <div class="right">
+          <button class="btn btn-ghost btn-sm" onclick="exitApp()">← Home</button>
+          <div class="avatar">V</div>
+        </div>
+      </div>
+      <div class="content">
+
+        <!-- OVERVIEW -->
+        <div class="page active" id="page-overview">
+          <div class="section-actions"><div><h1>Performance Overview</h1><div class="desc">Creative health across Meta, Google, TikTok and Taboola.</div></div></div>
+          <div class="kpis" id="kpis"></div>
+          <div class="grid-2">
+            <div class="card"><h3>ROAS over time</h3><div class="csub">Blended return on ad spend, all platforms</div><div class="chart-wrap"><canvas id="roasChart"></canvas></div></div>
+            <div class="card"><h3>Fatigue score by creative</h3><div class="csub">Lower = more fatigued</div><div class="chart-wrap"><canvas id="fatigueChart"></canvas></div></div>
+          </div>
+          <div class="card"><h3>🚨 Top creatives to replace now</h3><div class="csub">Highest spend-at-risk — act on these first</div><div id="alerts"></div></div>
+        </div>
+
+        <!-- CREATIVES -->
+        <div class="page" id="page-creatives">
+          <div class="section-actions"><div><h1>Creatives</h1><div class="desc">Every active creative, scored and ranked by fatigue.</div></div></div>
+          <div class="filters" id="filters"></div>
+          <div class="table-card"><table>
+            <thead><tr>
+              <th data-sort="name">Creative</th><th data-sort="platform">Platform</th><th data-sort="current_roas">ROAS</th>
+              <th data-sort="current_ctr">CTR</th><th data-sort="age_days">Age</th><th data-sort="fatigue_score">Fatigue</th><th data-sort="status">Status</th>
+            </tr></thead>
+            <tbody id="creatives-body"></tbody>
+          </table></div>
+        </div>
+
+        <!-- AI STUDIO -->
+        <div class="page" id="page-studio">
+          <div class="section-actions"><div><h1>AI Studio</h1><div class="desc">Diagnose a fatiguing creative and generate its replacements.</div></div></div>
+          <div class="studio">
+            <div class="studio-list" id="studio-list"></div>
+            <div class="studio-main" id="studio-main">
+              <div class="empty-state"><div class="ico">⚡</div><div>Select a fatiguing creative to diagnose it<br>and generate launch-ready replacements.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REPORTS -->
+        <div class="page" id="page-reports">
+          <div class="section-actions"><div><h1>Weekly Report</h1><div class="desc">Spend, revenue and creative health summary.</div></div><button class="btn btn-primary btn-sm" onclick="exportCSV()">⬇ Export CSV</button></div>
+          <div class="kpis" id="report-kpis"></div>
+          <div class="grid-2">
+            <div class="card"><h3>Spend vs Revenue</h3><div class="csub">Daily, blended across platforms</div><div class="chart-wrap"><canvas id="reportChart"></canvas></div></div>
+            <div class="card"><h3>Platform breakdown</h3><div class="csub">Spend share by platform</div><div class="chart-wrap sm"><canvas id="platformChart"></canvas></div></div>
+          </div>
+        </div>
+
+        <!-- SETTINGS -->
+        <div class="page" id="page-settings">
+          <div class="section-actions"><div><h1>Settings</h1><div class="desc">Workspace & integration configuration.</div></div></div>
+          <div class="card" style="max-width:620px">
+            <h3>Profile</h3><div class="csub">Demo workspace</div>
+            <div class="metric-inline" style="margin-top:0">
+              <div><span>Name</span><b style="font-size:15px">Vigneshwar</b></div>
+              <div><span>Plan</span><b style="font-size:15px">Demo</b></div>
+              <div><span>Creatives</span><b style="font-size:15px" id="set-count">24</b></div>
+            </div>
+            <h3 style="margin-top:24px">AI provider key</h3><div class="csub">Optional — stored locally in this browser only. The demo runs fully on the built-in deterministic engine, so no key is required.</div>
+            <input type="password" placeholder="sk-... (optional, never leaves your browser)" style="width:100%;padding:11px 14px;border-radius:11px;background:var(--panel-2);border:1px solid var(--border);color:#fff;font-size:14px;font-family:inherit" />
+            <p style="font-size:12.5px;color:var(--slate-dim);margin-top:12px">🔒 This static demo makes no external API calls — diagnosis and generation run in your browser.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============ STATE ============
+let CREATIVES=[];
+let charts={};
+const PLATFORM_META={Meta:"🔵",Google:"🟡",TikTok:"⚫",Taboola:"🟠"};
+const STATUS_ORDER={dead:0,fatiguing:1,watch:2,healthy:3};
+
+// ============ LOAD ============
+async function loadData(){
+  try{
+    const r=await fetch('seed.json');
+    const d=await r.json();
+    CREATIVES=d.creatives;
+  }catch(e){ console.error('seed load failed',e); CREATIVES=[]; }
+}
+
+// ============ NAV ============
+function enterApp(){
+  document.getElementById('view-landing').style.display='none';
+  document.getElementById('view-app').style.display='block';
+  window.scrollTo(0,0);
+  renderAll();
+}
+function exitApp(){
+  document.getElementById('view-app').style.display='none';
+  document.getElementById('view-landing').style.display='block';
+  window.scrollTo(0,0);
+}
+document.querySelectorAll('.nav-item').forEach(it=>{
+  it.addEventListener('click',()=>{
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    it.classList.add('active');
+    const p=it.dataset.page;
+    document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));
+    document.getElementById('page-'+p).classList.add('active');
+    document.getElementById('topbar-title').textContent=it.textContent.trim();
+    if(p==='reports') renderReports();
+  });
+});
+
+// ============ FORMAT ============
+const fmt$=n=>'$'+Number(n).toLocaleString('en-US',{maximumFractionDigits:0});
+const fmtK=n=>n>=1000?(n/1000).toFixed(1)+'k':n;
+function gaugeColor(score){ if(score>=70)return'#10B981'; if(score>=50)return'#F59E0B'; if(score>=25)return'#F87171'; return'#EF4444'; }
+
+// ============ OVERVIEW ============
+function renderOverview(){
+  const ts=CREATIVES.reduce((a,c)=>a+c.total_spend,0);
+  const tr=CREATIVES.reduce((a,c)=>a+c.total_revenue,0);
+  const danger=CREATIVES.filter(c=>c.status==='fatiguing'||c.status==='dead');
+  const sar=danger.reduce((a,c)=>a+c.total_spend*0.3,0);
+  const kpis=[
+    {label:'🎬 Creatives Tracked',val:CREATIVES.length,sub:'across 4 platforms'},
+    {label:'⚠️ Fatiguing / Dead',val:danger.length,sub:`${CREATIVES.filter(c=>c.status==='healthy').length} healthy`},
+    {label:'💰 Total Spend',val:fmt$(ts),sub:`${(tr/ts).toFixed(2)}x blended ROAS`},
+    {label:'🔥 Spend at Risk',val:fmt$(sar),sub:'tied to dying creatives',gold:true},
+  ];
+  document.getElementById('kpis').innerHTML=kpis.map(k=>`
+    <div class="kpi"><div class="label">${k.label}</div><div class="val ${k.gold?'gold':''}">${k.val}</div><div class="sub">${k.sub}</div></div>`).join('');
+
+  // ROAS over time (blended)
+  const daily={};
+  CREATIVES.forEach(c=>c.daily_history.forEach(d=>{
+    if(!daily[d.date])daily[d.date]={spend:0,revenue:0};
+    daily[d.date].spend+=d.spend; daily[d.date].revenue+=d.revenue;
+  }));
+  const dates=Object.keys(daily).sort();
+  const roas=dates.map(dt=>daily[dt].spend>0?+(daily[dt].revenue/daily[dt].spend).toFixed(3):0);
+  drawLine('roasChart',dates.map(d=>d.slice(5)),roas,'Blended ROAS');
+
+  // Fatigue by creative (worst 12)
+  const worst=[...CREATIVES].sort((a,b)=>a.fatigue_score-b.fatigue_score).slice(0,12);
+  drawBar('fatigueChart',worst.map(c=>c.name.length>16?c.name.slice(0,15)+'…':c.name),worst.map(c=>c.fatigue_score),worst.map(c=>gaugeColor(c.fatigue_score)));
+
+  // Alerts
+  const top=[...danger].sort((a,b)=>(b.total_spend*0.3)-(a.total_spend*0.3)).slice(0,5);
+  document.getElementById('alerts').innerHTML=top.map((c,i)=>`
+    <div class="alert-row">
+      <div class="alert-rank">${i+1}</div>
+      <div class="alert-info"><b>${c.name} · ${PLATFORM_META[c.platform]} ${c.platform}</b>
+        <span>ROAS ${c.current_roas}x (peak ${c.peak_roas}x) · fatigue ${c.fatigue_score} · ${c.days_remaining===0?'dead':c.days_remaining+'d left'}</span></div>
+      <div class="alert-risk">${fmt$(c.total_spend*0.3)} at risk</div>
+    </div>`).join('') || '<div style="color:var(--slate);padding:14px 0">No creatives at risk 🎉</div>';
+}
+
+// ============ CHARTS ============
+function baseOpts(){return{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+  scales:{x:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6B7280',font:{size:10}}},
+          y:{grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6B7280',font:{size:10}}}}};}
+function drawLine(id,labels,data,label){
+  if(charts[id])charts[id].destroy();
+  const ctx=document.getElementById(id);
+  const g=ctx.getContext('2d').createLinearGradient(0,0,0,260);
+  g.addColorStop(0,'rgba(16,185,129,.35)');g.addColorStop(1,'rgba(16,185,129,0)');
+  charts[id]=new Chart(ctx,{type:'line',data:{labels,datasets:[{label,data,borderColor:'#10B981',backgroundColor:g,fill:true,tension:.35,borderWidth:2,pointRadius:0,pointHoverRadius:4}]},options:baseOpts()});
+}
+function drawBar(id,labels,data,colors){
+  if(charts[id])charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id),{type:'bar',data:{labels,datasets:[{data,backgroundColor:colors,borderRadius:5,barThickness:14}]},
+    options:{...baseOpts(),indexAxis:'y',scales:{x:{max:100,grid:{color:'rgba(255,255,255,.04)'},ticks:{color:'#6B7280',font:{size:10}}},y:{grid:{display:false},ticks:{color:'#9CA3AF',font:{size:10.5}}}}}});
+}
+
+// ============ CREATIVES ============
+let curFilter='all',sortKey='fatigue_score',sortDir='asc';
+function renderFilters(){
+  const f=['all','Meta','Google','TikTok','Taboola','fatiguing','dead'];
+  document.getElementById('filters').innerHTML=f.map(x=>`<div class="chip ${x===curFilter?'active':''}" data-f="${x}">${x==='all'?'All':(PLATFORM_META[x]||'')+' '+x.charAt(0).toUpperCase()+x.slice(1)}</div>`).join('');
+  document.querySelectorAll('#filters .chip').forEach(ch=>ch.onclick=()=>{curFilter=ch.dataset.f;renderFilters();renderTable();});
+}
+function renderTable(){
+  let rows=[...CREATIVES];
+  if(['Meta','Google','TikTok','Taboola'].includes(curFilter))rows=rows.filter(c=>c.platform===curFilter);
+  else if(['fatiguing','dead'].includes(curFilter))rows=rows.filter(c=>c.status===curFilter);
+  rows.sort((a,b)=>{
+    let av=a[sortKey],bv=b[sortKey];
+    if(sortKey==='status'){av=STATUS_ORDER[av];bv=STATUS_ORDER[bv];}
+    if(typeof av==='string')return sortDir==='asc'?av.localeCompare(bv):bv.localeCompare(av);
+    return sortDir==='asc'?av-bv:bv-av;
+  });
+  document.getElementById('creatives-body').innerHTML=rows.map(c=>`
+    <tr onclick="openStudio('${c.id}')">
+      <td><b>${c.name}</b><div style="font-size:12px;color:var(--slate-dim)">${c.campaign}</div></td>
+      <td><span class="pf-badge">${PLATFORM_META[c.platform]} ${c.platform}</span></td>
+      <td><b style="color:${c.current_roas>=c.breakeven_roas?'#34D399':'#f87171'}">${c.current_roas}x</b></td>
+      <td>${c.current_ctr}%</td>
+      <td>${c.age_days}d</td>
+      <td><div class="gauge"><div class="gauge-bar"><div class="gauge-fill" style="width:${c.fatigue_score}%;background:${gaugeColor(c.fatigue_score)}"></div></div><span class="gauge-num" style="color:${gaugeColor(c.fatigue_score)}">${c.fatigue_score}</span></div></td>
+      <td><span class="status-pill status-${c.status}">${c.status}</span></td>
+    </tr>`).join('');
+}
+document.querySelectorAll('#page-creatives thead th').forEach(th=>th.onclick=()=>{
+  const k=th.dataset.sort; if(sortKey===k)sortDir=sortDir==='asc'?'desc':'asc'; else{sortKey=k;sortDir='asc';}
+  renderTable();
+});
+
+// ============ AI ENGINE (in-browser, deterministic) ============
+function diagnose(c){
+  const roasDrop=Math.round((1-c.current_roas/c.peak_roas)*100);
+  const ctrDrop=Math.round((1-c.current_ctr/c.initial_ctr)*100);
+  const belowBE=c.current_roas<c.breakeven_roas;
+  let urgency=c.status==='dead'?'Critical':c.status==='fatiguing'?'High':c.status==='watch'?'Medium':'Low';
+  const happening=`${c.name} on ${c.platform} is ${c.status==='dead'?'no longer profitable':'losing steam fast'}. ROAS has fallen ${roasDrop}% from its peak of ${c.peak_roas}x to ${c.current_roas}x${belowBE?`, now below the ${c.breakeven_roas}x breakeven`:''}. CTR is down ${ctrDrop}% (${c.initial_ctr}% → ${c.current_ctr}%) over ${c.age_days} days.`;
+  const causeMap={
+    Meta:'audience saturation and frequency build-up — the same users have seen this creative too many times, so the hook no longer stops the scroll',
+    Google:'auction pressure and query fatigue — the ad has exhausted its highest-intent impressions and is now serving to lower-quality searches',
+    TikTok:'fast trend decay — TikTok creatives burn out in 7–14 days as the sound/format stops feeling native to the feed',
+    Taboola:'curiosity wear-out — the headline angle has been over-served on native placements, collapsing CTR',
+  };
+  const why=`The dominant driver is ${causeMap[c.platform]}. The steep CTR decline (${ctrDrop}%) running ahead of the ROAS drop is the signature of creative fatigue rather than a landing-page or offer problem.`;
+  const angleMap={
+    Meta:'a pattern-interrupt UGC hook with a fresh first 3 seconds and a new social-proof angle',
+    Google:'a benefit-led RSA refresh targeting a new high-intent keyword cluster with a sharper CTA',
+    TikTok:'a creator-style "POV / day-in-my-life" format riding a current trending sound',
+    Taboola:'a new curiosity headline built around a specific number or "new study" advertorial angle',
+  };
+  const angle=angleMap[c.platform];
+  const actions=[
+    `Pause spend on this creative within ${c.days_remaining<=1?'24 hours':c.days_remaining+' days'} — it's ${belowBE?'burning budget below breakeven':'about to cross breakeven'}.`,
+    `Launch ${angle} as the replacement test (generate variations below).`,
+    `Reallocate the freed ${fmt$(c.total_spend*0.3)} to your top healthy ${c.platform} creative to protect blended ROAS.`,
+  ];
+  return {happening,why,urgency,angle,actions};
+}
+
+function generateVariations(c,angle){
+  const P=c.platform;
+  const banks={
+    Meta:[
+      {tag:'Pattern interrupt',head:'I almost scrolled past this… then I saw the price.',body:`The ${c.campaign.toLowerCase()} everyone's talking about — real people, real results, no fluff. Limited stock left.`,cta:'Shop the drop',angle:'UGC hook + scarcity'},
+      {tag:'Social proof',head:'12,000 people switched this month. Here\'s why.',body:'Stop guessing. The reviews speak for themselves — see what made everyone make the switch before the offer ends.',cta:'See why',angle:'Testimonial-led trust'},
+      {tag:'Problem / solution',head:'Tired of paying full price for less?',body:`This is the upgrade you've been putting off. Built better, priced smarter — and right now it's on the ${c.campaign}.`,cta:'Upgrade now',angle:'Pain-point reframe'},
+    ],
+    Google:[
+      {tag:'High-intent',head:`${c.campaign} — Official Site | Best Price 2026`,body:'Compare top-rated options, read verified reviews, and save today. Fast shipping. Trusted by thousands.',cta:'Shop now',angle:'Search-intent + trust signals'},
+      {tag:'Benefit-led',head:'Rated #1 for Value — Free Shipping Over $50',body:'Get more for less without the guesswork. Premium quality, transparent pricing, easy returns.',cta:'View deals',angle:'Value + risk reversal'},
+      {tag:'Offer-led',head:'50% Off Ends Soon — Limited Stock',body:'The deal serious buyers are searching for. Lock in today\'s price before it\'s gone.',cta:'Claim offer',angle:'Urgency + clear CTA'},
+    ],
+    TikTok:[
+      {tag:'POV creator',head:'POV: you finally found the one that actually works',body:'no cap this changed my whole routine 😭 wait for the end. link in bio before it sells out again.',cta:'Get yours',angle:'Authentic creator POV'},
+      {tag:'GRWM',head:'get ready with me but make it ✨affordable✨',body:'using this every single day now. the difference is unreal. running to grab another before it\'s gone fr.',cta:'Shop it',angle:'Routine / habit format'},
+      {tag:'Trend reaction',head:'tell me why nobody told me about this sooner',body:'tried it because of the hype… the hype was right. saving you the doom-scroll, just go get it.',cta:'Tap in',angle:'Trend-riding reaction'},
+    ],
+    Taboola:[
+      {tag:'Curiosity',head:'The One Thing Most People Get Wrong (And How to Fix It)',body:'A new approach is quietly replacing the old way — and early adopters aren\'t looking back. Here\'s what they discovered.',cta:'Read more',angle:'Curiosity-gap advertorial'},
+      {tag:'Authority',head:'New Study: Why Experts Are Switching in 2026',body:'The data surprised even the skeptics. See the simple change that\'s making the biggest difference this year.',cta:'See the study',angle:'"New study" credibility'},
+      {tag:'Listicle',head:'7 Things Smart Shoppers Know That You Don\'t',body:'Number 4 changes everything. A practical breakdown of what actually moves the needle — and what\'s a waste of money.',cta:'See the list',angle:'Listicle / native discovery'},
+    ],
+  };
+  return banks[P].map((v,i)=>({variation:i+1,...v}));
+}
+
+// ============ AI STUDIO UI ============
+let selectedId=null;
+function renderStudioList(){
+  const list=CREATIVES.filter(c=>c.status==='fatiguing'||c.status==='dead'||c.status==='watch')
+    .sort((a,b)=>a.fatigue_score-b.fatigue_score);
+  document.getElementById('studio-list').innerHTML=list.map(c=>`
+    <div class="studio-item ${c.id===selectedId?'active':''}" onclick="openStudio('${c.id}')">
+      <b>${c.name}</b>
+      <div class="meta"><span>${PLATFORM_META[c.platform]} ${c.platform}</span><span style="color:${gaugeColor(c.fatigue_score)}">⬤ ${c.fatigue_score}</span></div>
+    </div>`).join('');
+}
+function openStudio(id){
+  selectedId=id;
+  // switch to studio tab
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector('.nav-item[data-page="studio"]').classList.add('active');
+  document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('active'));
+  document.getElementById('page-studio').classList.add('active');
+  document.getElementById('topbar-title').textContent='AI Studio';
+  renderStudioList();
+  const c=CREATIVES.find(x=>x.id===id);
+  if(!c)return;
+  const d=diagnose(c);
+  const m=document.getElementById('studio-main');
+  m.innerHTML=`
+    <div class="diag-card">
+      <div class="diag-head">
+        <h3>${c.name} · ${PLATFORM_META[c.platform]} ${c.platform}</h3>
+        <span class="urgency urg-${d.urgency}">${d.urgency} urgency</span>
+      </div>
+      <div class="metric-inline">
+        <div><span>Current ROAS</span><b style="color:${c.current_roas>=c.breakeven_roas?'#34D399':'#f87171'}">${c.current_roas}x</b></div>
+        <div><span>Peak ROAS</span><b>${c.peak_roas}x</b></div>
+        <div><span>Fatigue</span><b style="color:${gaugeColor(c.fatigue_score)}">${c.fatigue_score}</b></div>
+        <div><span>Age</span><b>${c.age_days}d</b></div>
+        <div><span>Spend</span><b>${fmt$(c.total_spend)}</b></div>
+      </div>
+      <div class="diag-block"><div class="t">🔍 What's happening</div><p>${d.happening}</p></div>
+      <div class="diag-block"><div class="t">🧠 Why it's happening</div><p>${d.why}</p></div>
+      <div class="diag-block"><div class="t">🎯 Recommended next angle</div><p>${d.angle.charAt(0).toUpperCase()+d.angle.slice(1)}.</p></div>
+      <div class="diag-block"><div class="t">✅ Action items</div><ul>${d.actions.map(a=>`<li>${a}</li>`).join('')}</ul></div>
+      <button class="btn btn-primary" onclick="runGenerate('${c.id}')">⚡ Generate replacement ads</button>
+    </div>
+    <div id="variations"></div>`;
+}
+function runGenerate(id){
+  const c=CREATIVES.find(x=>x.id===id);
+  const wrap=document.getElementById('variations');
+  wrap.innerHTML=`<div class="card"><div class="csub" style="margin-bottom:14px">⚡ Generating platform-tuned variations…</div><div class="var-grid">${[1,2,3].map(()=>'<div class="skeleton" style="height:230px"></div>').join('')}</div></div>`;
+  setTimeout(()=>{
+    const vars=generateVariations(c,diagnose(c).angle);
+    wrap.innerHTML=`<div class="card"><h3>Launch-ready replacements</h3><div class="csub">3 variations tuned to ${c.platform}'s native voice — copy and ship.</div>
+      <div class="var-grid">${vars.map(v=>`
+        <div class="var">
+          <div class="vtag">Variation ${v.variation} · ${v.tag}</div>
+          <div class="vhead">${v.head}</div>
+          <div class="vbody">${v.body}</div>
+          <div class="vcta">CTA → ${v.cta}</div>
+          <div class="vangle">${v.angle}</div>
+          <button class="copy-btn" onclick='copyVar(this,${JSON.stringify(JSON.stringify(v))})'>📋 Copy ad</button>
+        </div>`).join('')}</div></div>`;
+  },650);
+}
+function copyVar(btn,raw){
+  const v=JSON.parse(raw);
+  const txt=`Headline: ${v.head}\nBody: ${v.body}\nCTA: ${v.cta}\nAngle: ${v.angle}`;
+  navigator.clipboard.writeText(txt).then(()=>{btn.textContent='✓ Copied';toast('Ad copied to clipboard');setTimeout(()=>btn.textContent='📋 Copy ad',1600);});
+}
+
+// ============ REPORTS ============
+function renderReports(){
+  const ts=CREATIVES.reduce((a,c)=>a+c.total_spend,0);
+  const tr=CREATIVES.reduce((a,c)=>a+c.total_revenue,0);
+  const ti=CREATIVES.reduce((a,c)=>a+c.total_impressions,0);
+  const tc=CREATIVES.reduce((a,c)=>a+c.total_clicks,0);
+  document.getElementById('report-kpis').innerHTML=[
+    {l:'💰 Total Spend',v:fmt$(ts)},{l:'📈 Total Revenue',v:fmt$(tr)},
+    {l:'🎯 Blended ROAS',v:(tr/ts).toFixed(2)+'x'},{l:'👁 Impressions',v:fmtK(ti)},
+  ].map(k=>`<div class="kpi"><div class="label">${k.l}</div><div class="val">${k.v}</div></div>`).join('');
+  // spend vs revenue daily
+  const daily={};
+  CREATIVES.forEach(c=>c.daily_history.forEach(d=>{if(!daily[d.date])daily[d.date]={spend:0,revenue:0};daily[d.date].spend+=d.spend;daily[d.date].revenue+=d.revenue;}));
+  const dates=Object.keys(daily).sort();
+  if(charts.reportChart)charts.reportChart.destroy();
+  charts.reportChart=new Chart(document.getElementById('reportChart'),{type:'line',
+    data:{labels:dates.map(d=>d.slice(5)),datasets:[
+      {label:'Spend',data:dates.map(d=>+daily[d].spend.toFixed(0)),borderColor:'#6B7280',backgroundColor:'transparent',tension:.35,borderWidth:2,pointRadius:0},
+      {label:'Revenue',data:dates.map(d=>+daily[d].revenue.toFixed(0)),borderColor:'#34D399',backgroundColor:'transparent',tension:.35,borderWidth:2,pointRadius:0},
+    ]},options:{...baseOpts(),plugins:{legend:{display:true,labels:{color:'#9CA3AF',font:{size:11},boxWidth:12}}}}});
+  // platform pie
+  const pf={};
+  CREATIVES.forEach(c=>{pf[c.platform]=(pf[c.platform]||0)+c.total_spend;});
+  if(charts.platformChart)charts.platformChart.destroy();
+  charts.platformChart=new Chart(document.getElementById('platformChart'),{type:'doughnut',
+    data:{labels:Object.keys(pf),datasets:[{data:Object.values(pf).map(v=>+v.toFixed(0)),backgroundColor:['#10B981','#34D399','#0d9488','#047857'],borderColor:'#0A0F0D',borderWidth:3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#9CA3AF',font:{size:12},padding:14}}}}});
+}
+function exportCSV(){
+  const head=['name','platform','campaign','current_roas','peak_roas','current_ctr','fatigue_score','status','total_spend','total_revenue'];
+  const rows=CREATIVES.map(c=>head.map(h=>c[h]).join(','));
+  const csv=[head.join(','),...rows].join('\n');
+  const blob=new Blob([csv],{type:'text/csv'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='adspora_report.csv';a.click();
+  toast('Report exported');
+}
+
+// ============ TOAST ============
+let toastT;
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
+
+// ============ RENDER ALL ============
+function renderAll(){
+  document.getElementById('set-count').textContent=CREATIVES.length;
+  renderOverview();renderFilters();renderTable();renderStudioList();
+}
+
+// ============ INIT ============
+(async()=>{await loadData();
+  // if URL has #app, go straight in
+  if(location.hash==='#app')enterApp();
+})();
+</script>
+</body>
+</html>
